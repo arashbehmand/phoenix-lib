@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phoenix-lib"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "langchain-community",
+    "langchain-core",
+    "langchain-litellm",
+    "litellm",
+    "jinja2",
+    "pyyaml",
+    "structlog",
+    "sentry-sdk[fastapi]",
+    "sqlalchemy[asyncio]>=2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
