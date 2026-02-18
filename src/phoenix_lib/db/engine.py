@@ -40,8 +40,12 @@ def create_async_engine_from_dsn(
     Args:
         dsn: Database DSN / URL string.
         echo: If True, SQL statements are logged (useful for debugging).
-        extensions: Optional list of PostgreSQL extensions to note (informational
-                    for callers; DDL must be executed separately).
+        extensions: Optional list of PostgreSQL extensions required by this service
+            (e.g. ``["vector"]`` for pgvector).  Declaring them here makes the
+            intent visible at the call site.  The caller is responsible for issuing
+            the actual DDL (``CREATE EXTENSION IF NOT EXISTS <name>``) before the
+            first table-creation step — conventionally inside a ``create_tables()``
+            startup function.
 
     Returns:
         Configured ``AsyncEngine`` instance.

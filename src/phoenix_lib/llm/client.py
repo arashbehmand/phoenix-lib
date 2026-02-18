@@ -3,7 +3,6 @@
 # pylint: disable=import-error,no-name-in-module
 
 import os
-from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 try:
@@ -15,18 +14,18 @@ from langchain_core.prompts import PromptTemplate
 from langchain_litellm import ChatLiteLLM
 
 try:
-    from langfuse.langchain import (  # type: ignore
-        CallbackHandler as callback_handler_cls,  # pylint: disable=invalid-name
-    )
+    from langfuse.langchain import \
+        CallbackHandler as \
+        callback_handler_cls  # type: ignore; pylint: disable=invalid-name
 except Exception:  # pylint: disable=broad-exception-caught
     callback_handler_cls = None  # pylint: disable=invalid-name
+
+import logging
 
 from phoenix_lib.llm.config import LLMConfig
 from phoenix_lib.llm.prompts import PromptLoader
 from phoenix_lib.llm.utils import normalize_result
 from phoenix_lib.utils.time import utc_timestamp
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +50,32 @@ class LLMClient:
         self._llm: Optional[ChatLiteLLM] = None
         self._langfuse = None
         self._langfuse_initialized = False
+
+    @staticmethod
+    def create_chat_model(llm_config: LLMConfig) -> Optional[ChatLiteLLM]:
+        """Create a ``ChatLiteLLM`` instance from an ``LLMConfig``.
+
+        Services that need a bare chat model (not the full LLMClient pipeline)
+        can call this directly without constructing an LLMClient.
+
+        Returns ``None`` if the model string is invalid.
+        """
+        model_string = llm_config.model
+        if "/" not in model_string:
+            logger.warning(
+                "Invalid model string format: '%s'. Expected 'provider/model'.",
+                model_string,
+            )
+            return None
+        try:
+            return ChatLiteLLM(
+                model=model_string,
+                model_kwargs=llm_config.params if llm_config.params else None,
+                callbacks=None,
+            )
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            logger.error("Failed to initialise LLM '%s': %s", model_string, exc)
+            return None
 
     def _create_llm_from_config(self, llm_config: LLMConfig) -> ChatLiteLLM:
         """Create a ChatLiteLLM instance from an LLMConfig."""
@@ -139,7 +164,11 @@ class LLMClient:
 
         chain = prompt | llm_to_use
 
-        logger.info("llm.generate prompt=%s request_id=%s", prompt_name, context.get("request_id", utc_timestamp()))
+        logger.info(
+            "llm.generate prompt=%s request_id=%s",
+            prompt_name,
+            context.get("request_id", utc_timestamp()),
+        )
 
         try:
             normalized = await self._invoke_with_tracing(chain, prompt_name, context)
@@ -149,7 +178,9 @@ class LLMClient:
 
         return normalized
 
-    async def generate_structured(self, prompt_name: str, context: Dict[str, Any]) -> Any:
+    async def generate_structured(
+        self, prompt_name: str, context: Dict[str, Any]
+    ) -> Any:
         """Generate a response and normalize it to primitives.
 
         Uses the default model. Useful when callers expect primitive types
@@ -159,17 +190,25 @@ class LLMClient:
         prompt = PromptTemplate.from_template(template_text, template_format="jinja2")
         chain = prompt | self._get_default_llm()
 
-        logger.info("llm.generate_structured prompt=%s request_id=%s", prompt_name, context.get("request_id", utc_timestamp()))
+        logger.info(
+            "llm.generate_structured prompt=%s request_id=%s",
+            prompt_name,
+            context.get("request_id", utc_timestamp()),
+        )
 
         try:
             normalized = await self._invoke_with_tracing(chain, prompt_name, context)
         except Exception as e:
-            logger.error("llm.generate_structured.error prompt=%s error=%s", prompt_name, str(e))
+            logger.error(
+                "llm.generate_structured.error prompt=%s error=%s", prompt_name, str(e)
+            )
             raise
 
         return normalized
 
-    async def _invoke_with_tracing(self, chain, prompt_name: str, context: Dict[str, Any]) -> str:
+    async def _invoke_with_tracing(
+        self, chain, prompt_name: str, context: Dict[str, Any]
+    ) -> str:
         """Invoke a LangChain chain with optional Langfuse tracing."""
         langfuse_client = self._get_langfuse_client()
 
@@ -179,7 +218,9 @@ class LLMClient:
                     name=prompt_name, input=context
                 ) as span:
                     langfuse_handler = callback_handler_cls()
-                    result = await chain.ainvoke(context, config={"callbacks": [langfuse_handler]})
+                    result = await chain.ainvoke(
+                        context, config={"callbacks": [langfuse_handler]}
+                    )
                     normalized = normalize_result(result)
                     try:
                         span.update_trace(output={"content": normalized})

@@ -54,7 +54,9 @@ class Meta(BaseModel):
     version: str | None = Field(
         None, description="A version field which follows semver - e.g. v1.0.0"
     )
-    lastModified: str | None = Field(None, description="Using ISO 8601 with YYYY-MM-DDThh:mm:ss")
+    lastModified: str | None = Field(
+        None, description="Using ISO 8601 with YYYY-MM-DDThh:mm:ss"
+    )
 
 
 class Iso8601(
@@ -79,14 +81,22 @@ class JobDescriptionSchema(BaseModel):
     company: str | None = Field(None, description="Microsoft")
     type: str | None = Field(None, description="Full-time, part-time, contract, etc.")
     date: Iso8601 | None = None
-    description: str | None = Field(None, description="Write a short description about the job")
+    description: str | None = Field(
+        None, description="Write a short description about the job"
+    )
     location: Location | None = None
-    remote: Remote | None = Field(None, description="the level of remote work available")
+    remote: Remote | None = Field(
+        None, description="the level of remote work available"
+    )
     salary: str | None = Field(None, description="100000")
     experience: str | None = Field(None, description="Senior or Junior or Mid-level")
     responsibilities: list[str] | None = Field(None, description="what the job entails")
-    qualifications: list[str] | None = Field(None, description="List out your qualifications")
-    skills: list[Skill] | None = Field(None, description="List out your professional skill-set")
+    qualifications: list[str] | None = Field(
+        None, description="List out your qualifications"
+    )
+    skills: list[Skill] | None = Field(
+        None, description="List out your professional skill-set"
+    )
     meta: Meta | None = Field(
         None,
         description="The schema version and any other tooling configuration lives here",
@@ -95,7 +105,8 @@ class JobDescriptionSchema(BaseModel):
 
 def get_job_schema_parser():
     """Return a LangChain PydanticOutputParser for JobDescriptionSchema."""
-    from langchain_core.output_parsers import PydanticOutputParser  # pylint: disable=import-outside-toplevel
+    from langchain_core.output_parsers import \
+        PydanticOutputParser  # pylint: disable=import-outside-toplevel
 
     return PydanticOutputParser(pydantic_object=JobDescriptionSchema)
 

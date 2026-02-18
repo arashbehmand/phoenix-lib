@@ -2,7 +2,6 @@
 
 import logging
 import sys
-from typing import Optional
 
 
 def configure_logging(log_level: str = "INFO") -> None:

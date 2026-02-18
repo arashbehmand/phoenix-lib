@@ -43,7 +43,9 @@ def normalize_result(result: Any) -> str:
                 return ""
         if hasattr(value, "model_dump"):
             try:
-                dumped = value.model_dump(mode="json", exclude_none=True, warnings=False)
+                dumped = value.model_dump(
+                    mode="json", exclude_none=True, warnings=False
+                )
             except TypeError:
                 dumped = value.model_dump(mode="json", exclude_none=True)
             except Exception:  # pylint: disable=broad-exception-caught

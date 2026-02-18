@@ -6,15 +6,8 @@
 
 from __future__ import annotations
 
-from pydantic import (
-    AnyUrl,
-    BaseModel,
-    ConfigDict,
-    EmailStr,
-    Field,
-    RootModel,
-    StringConstraints,
-)
+from pydantic import (AnyUrl, BaseModel, ConfigDict, EmailStr, Field,
+                      RootModel, StringConstraints)
 from typing_extensions import Annotated
 
 
@@ -41,7 +34,9 @@ class Profile(BaseModel):
 
     network: str | None = Field(None, description="e.g. Facebook or Twitter")
     username: str | None = Field(None, description="e.g. neutralthoughts")
-    url: AnyUrl | None = Field(None, description="e.g. http://twitter.example.com/neutralthoughts")
+    url: AnyUrl | None = Field(
+        None, description="e.g. http://twitter.example.com/neutralthoughts"
+    )
 
 
 class Basics(BaseModel):
@@ -114,7 +109,9 @@ class Meta(BaseModel):
     version: str | None = Field(
         None, description="A version field which follows semver - e.g. v1.0.0"
     )
-    lastModified: str | None = Field(None, description="Using ISO 8601 with YYYY-MM-DDThh:mm:ss")
+    lastModified: str | None = Field(
+        None, description="Using ISO 8601 with YYYY-MM-DDThh:mm:ss"
+    )
 
 
 class Iso8601(
@@ -151,7 +148,9 @@ class WorkItem(BaseModel):
     summary: str | None = Field(
         None, description="Give an overview of your responsibilities at the company"
     )
-    highlights: list[str] | None = Field(None, description="Specify multiple accomplishments")
+    highlights: list[str] | None = Field(
+        None, description="Specify multiple accomplishments"
+    )
 
 
 class VolunteerItem(BaseModel):
@@ -173,7 +172,9 @@ class VolunteerItem(BaseModel):
 class EducationItem(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    institution: str | None = Field(None, description="e.g. Massachusetts Institute of Technology")
+    institution: str | None = Field(
+        None, description="e.g. Massachusetts Institute of Technology"
+    )
     url: AnyUrl | None = Field(None, description="e.g. http://facebook.example.com")
     area: str | None = Field(None, description="e.g. Arts")
     studyType: str | None = Field(None, description="e.g. Bachelor")
@@ -186,16 +187,22 @@ class EducationItem(BaseModel):
 class Award(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    title: str | None = Field(None, description="e.g. One of the 100 greatest minds of the century")
+    title: str | None = Field(
+        None, description="e.g. One of the 100 greatest minds of the century"
+    )
     date: Iso8601 | None = None
     awarder: str | None = Field(None, description="e.g. Time Magazine")
-    summary: str | None = Field(None, description="e.g. Received for my work with Quantum Physics")
+    summary: str | None = Field(
+        None, description="e.g. Received for my work with Quantum Physics"
+    )
 
 
 class Certificate(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    name: str | None = Field(None, description="e.g. Certified Kubernetes Administrator")
+    name: str | None = Field(
+        None, description="e.g. Certified Kubernetes Administrator"
+    )
     date: Iso8601 | None = None
     url: AnyUrl | None = Field(None, description="e.g. http://example.com")
     issuer: str | None = Field(None, description="e.g. CNCF")
@@ -225,7 +232,9 @@ class Project(BaseModel):
         None, description="Short summary of project. e.g. Collated works of 2017."
     )
     highlights: list[str] | None = Field(None, description="Specify multiple features")
-    keywords: list[str] | None = Field(None, description="Specify special elements involved")
+    keywords: list[str] | None = Field(
+        None, description="Specify special elements involved"
+    )
     startDate: Iso8601 | None = None
     endDate: Iso8601 | None = None
     url: AnyUrl | None = Field(
@@ -268,8 +277,12 @@ class ResumeSchema(BaseModel):
     publications: list[Publication] | None = Field(
         None, description="Specify your publications through your career"
     )
-    skills: list[Skill] | None = Field(None, description="List out your professional skill-set")
-    languages: list[Language] | None = Field(None, description="List any other languages you speak")
+    skills: list[Skill] | None = Field(
+        None, description="List out your professional skill-set"
+    )
+    languages: list[Language] | None = Field(
+        None, description="List any other languages you speak"
+    )
     interests: list[Interest] | None = None
     references: list[Reference] | None = Field(
         None, description="List references you have received"
@@ -290,7 +303,8 @@ Volunteer = VolunteerItem
 
 def get_json_resume_parser():
     """Return a LangChain PydanticOutputParser for JSON Resume format."""
-    from langchain_core.output_parsers import PydanticOutputParser  # pylint: disable=import-outside-toplevel
+    from langchain_core.output_parsers import \
+        PydanticOutputParser  # pylint: disable=import-outside-toplevel
 
     return PydanticOutputParser(pydantic_object=ResumeSchema)
 

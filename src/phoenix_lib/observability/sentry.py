@@ -35,9 +35,12 @@ def init_sentry(
         return
 
     import sentry_sdk  # pylint: disable=import-outside-toplevel
-    from sentry_sdk.integrations.fastapi import FastApiIntegration  # pylint: disable=import-outside-toplevel
-    from sentry_sdk.integrations.logging import LoggingIntegration  # pylint: disable=import-outside-toplevel
-    from sentry_sdk.integrations.starlette import StarletteIntegration  # pylint: disable=import-outside-toplevel
+    from sentry_sdk.integrations.fastapi import \
+        FastApiIntegration  # pylint: disable=import-outside-toplevel
+    from sentry_sdk.integrations.logging import \
+        LoggingIntegration  # pylint: disable=import-outside-toplevel
+    from sentry_sdk.integrations.starlette import \
+        StarletteIntegration  # pylint: disable=import-outside-toplevel
 
     integrations = [
         FastApiIntegration(transaction_style="endpoint"),
@@ -49,12 +52,14 @@ def init_sentry(
     ]
 
     if use_asyncpg:
-        from sentry_sdk.integrations.asyncpg import AsyncPGIntegration  # pylint: disable=import-outside-toplevel
+        from sentry_sdk.integrations.asyncpg import \
+            AsyncPGIntegration  # pylint: disable=import-outside-toplevel
 
         integrations.append(AsyncPGIntegration())
 
     if use_aiohttp:
-        from sentry_sdk.integrations.aiohttp import AioHttpIntegration  # pylint: disable=import-outside-toplevel
+        from sentry_sdk.integrations.aiohttp import \
+            AioHttpIntegration  # pylint: disable=import-outside-toplevel
 
         integrations.append(AioHttpIntegration())
 
