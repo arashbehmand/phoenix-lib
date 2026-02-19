@@ -56,8 +56,10 @@ def create_async_engine_from_dsn(
     if dialect == "sqlite" or (url.drivername or "").startswith("sqlite"):
         connect_args = {"check_same_thread": False}
 
+    # IMPORTANT: str(URL) hides passwords as "***", which breaks authentication.
+    # Render explicitly with hide_password=False for actual connection DSNs.
     engine = create_async_engine(
-        str(url),
+        url.render_as_string(hide_password=False),
         echo=echo,
         pool_pre_ping=True,
         connect_args=connect_args,
