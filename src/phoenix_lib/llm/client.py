@@ -206,6 +206,42 @@ class LLMClient:
 
         return normalized
 
+    async def generate_chat(
+        self,
+        messages: list,
+        model=None,
+    ) -> str:
+        """Send a multi-turn chat completion request.
+
+        Unlike generate(), which renders a single prompt template,
+        this method accepts a pre-built list of BaseMessage objects
+        for conversational multi-turn interactions.
+
+        Args:
+            messages: List of langchain_core BaseMessage objects
+                      (SystemMessage, HumanMessage, AIMessage).
+            model: Optional model override — either a model string or an LLMConfig.
+
+        Returns:
+            Normalized string response from the LLM.
+        """
+        if model is not None:
+            if isinstance(model, LLMConfig):
+                llm_to_use = self._create_llm_from_config(model)
+            else:
+                llm_to_use = ChatLiteLLM(model=model, callbacks=None)
+        else:
+            llm_to_use = self._get_default_llm()
+
+        logger.info("llm.generate_chat messages=%d", len(messages))
+
+        try:
+            result = await llm_to_use.ainvoke(messages)
+            return normalize_result(result)
+        except Exception as e:
+            logger.error("llm.generate_chat.error error=%s", str(e))
+            raise
+
     async def _invoke_with_tracing(
         self, chain, prompt_name: str, context: Dict[str, Any]
     ) -> str:
