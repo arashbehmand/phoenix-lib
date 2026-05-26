@@ -209,7 +209,7 @@ class LLMClient:
     async def generate_chat(
         self,
         messages: list,
-        model=None,
+        model: Optional[Union[str, LLMConfig]] = None,
     ) -> str:
         """Send a multi-turn chat completion request.
 
@@ -220,7 +220,8 @@ class LLMClient:
         Args:
             messages: List of langchain_core BaseMessage objects
                       (SystemMessage, HumanMessage, AIMessage).
-            model: Optional model override — either a model string or an LLMConfig.
+            model: Optional[Union[str, LLMConfig]] — model override. Either a model
+                   string (e.g. "openai/gpt-4o") or an LLMConfig.
 
         Returns:
             Normalized string response from the LLM.
